@@ -9,8 +9,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install all dependencies, including devDependencies needed for the build.
-RUN npm install
-
+RUN npm ci
 # Copy the rest of the application source code.
 COPY . .
 
@@ -27,7 +26,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install ONLY production dependencies to keep the image small.
-RUN npm install --omit=dev
+RUN npm ci --omit=dev --ignore-scripts
 
 # Copy the built application server and browser files from the 'build' stage.
 # The 'dist/project' directory contains both the 'server' and 'browser' folders.
