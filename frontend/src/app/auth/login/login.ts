@@ -17,9 +17,14 @@ export class Login {
   http = inject(HttpClient);
   router = inject(Router);
   auth = inject(Auth);
-  toaser = inject(ToastrService)
+  toaser = inject(ToastrService);
+  showPassword: boolean = false;
   email = '';
   password = '';
+  togglePassword() {
+    this.showPassword = !this.showPassword;
+  }
+
   submit() {
     const userDetails = { email: this.email, password: this.password };
     this.auth.login(userDetails).subscribe({

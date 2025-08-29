@@ -5,7 +5,17 @@
   box-sizing: border-box;
   font-family: "Poppins", sans-serif;
 }
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  color: #666;
+  user-select: none;
+}
 
+.toggle-password:hover {
+  color: #2575fc;
+}
 /* ===== Container ===== */
 .login-container {
   display: flex;
@@ -140,3 +150,72 @@ button:hover:not(:disabled) {
     font-size: 0.9rem;
   }
 }
+form label {
+  display: block;
+  text-align: left;
+  margin-bottom: 1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+  margin-top: 0.3rem;
+  font-size: 1rem;
+}
+
+input:focus {
+  border-color: #2575fc;
+  box-shadow: 0 0 5px rgba(37, 117, 252, 0.3);
+}
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  color: #666;
+  user-select: none;
+}
+
+.toggle-password:hover {
+  color: #2575fc;
+}
+
+button {
+  width: 100%;
+  padding: 0.9rem;
+  background: #2575fc;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background 0.3s ease;
+}
+
+button:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+  background: #1a5edb;
+}
+

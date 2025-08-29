@@ -19,6 +19,11 @@ export class Signup {
   email = '';
   password = '';
   username = '';
+  showPassword: boolean = false;
+
+  togglePassword() {
+    this.showPassword = !this.showPassword;
+  }
   submit() {
     const data = { "username": this.username, "email": this.email, "password": this.password }
     this.auth.signup(data).subscribe({

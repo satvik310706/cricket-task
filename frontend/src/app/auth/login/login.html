@@ -16,8 +16,13 @@
 
             <label>
                 Password
-                <input type="password" [(ngModel)]="password" name="password" placeholder="Enter your password" required
-                    minlength="6" #passwordRef="ngModel" />
+                <div class="password-wrapper">
+                    <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" name="password"
+                        placeholder="Enter your password" required minlength="6" #passwordRef="ngModel" />
+                    <span class="toggle-password" (click)="togglePassword()">
+                        <i class="material-icons">{{ showPassword ? '🙈 ': '👁️' }}</i>
+                    </span>
+                </div>
             </label>
             <div *ngIf="passwordRef.invalid && (passwordRef.dirty || passwordRef.touched)" class="error">
                 <div *ngIf="passwordRef.errors?.['required']">Password is required.</div>
