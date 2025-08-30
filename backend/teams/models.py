@@ -24,11 +24,11 @@ class TeamOut(BaseModel):
     name: str
     size: int
     stats: TeamStats
-    players: List[str]   # only player names (for list endpoints)
+    players: List[str]  
 
 class TeamDetailOut(BaseModel):
     id: str
     name: str
     size: int
     stats: TeamStats
-    players: List[PlayerOut]  # full player objects (for detail endpoint)
+    players: List[PlayerOut]
