@@ -4,7 +4,6 @@ from bson import ObjectId
 from pydantic.functional_validators import BeforeValidator
 
 
-# Pydantic v2 compatible ObjectId -> str converter
 PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
@@ -16,7 +15,7 @@ class PlayerIn(BaseModel):
     fielding: float = Field(..., ge=0, le=100)
     wicketKeeping: float = Field(..., ge=0, le=100)
 
-    # ensure name is stripped
+
     @field_validator("name")
     @classmethod
     def strip_name(cls, v: str) -> str:
@@ -41,7 +40,7 @@ class PlayerUpdate(BaseModel):
 
 
 class PlayerOut(BaseModel):
-    id: PyObjectId = Field(alias="_id")   # maps MongoDB _id → id in API
+    id: PyObjectId = Field(alias="_id")   
     name: str
     age: int
     batting: float
@@ -50,7 +49,7 @@ class PlayerOut(BaseModel):
     wicketKeeping: float
 
     model_config = ConfigDict(
-        populate_by_name=True,   # allow _id → id conversion
+        populate_by_name=True,  
         arbitrary_types_allowed=True,
-        json_encoders={ObjectId: str}   # ObjectId → str
+        json_encoders={ObjectId: str}
     )
