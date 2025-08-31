@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from players.routes import router as players_router
 from teams.routes import router as teams_router
-from auth.routes import router as auth_router  # if you keep auth
+from auth.routes import router as auth_router 
 from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI(title="Cricket Team Management API")
 
