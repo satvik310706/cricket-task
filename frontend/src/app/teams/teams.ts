@@ -188,7 +188,7 @@ export class Teams implements OnInit, OnDestroy {
     this.generating = true;
     this.http.post<any>(`${this.API}/generate`, this.teamForm).subscribe({
       next: raw => {
-        console.log('[teams] generate response:', raw);
+        // console.log('[teams] generate response:', raw);
         const team = this.toTeamSummary(raw);
         if (!team.id) {
           alert('Server returned team without id. Check server response.');

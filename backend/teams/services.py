@@ -7,7 +7,6 @@ from .models import TeamDetailOut, TeamOut, TeamStats, TeamCreateRequest
 PLAYERS = db.players
 TEAMS = db.teams
 
-
 def _to_player_out(doc: Dict[str, Any]) -> PlayerOut:
     return PlayerOut(
         id=str(doc["_id"]),
@@ -27,31 +26,58 @@ async def generate_team(req: TeamCreateRequest) -> TeamOut:
     if len(all_players) < TEAM_SIZE:
         raise ValueError("Not enough players left to form a team of 11")
 
-    # classify
-    bowlers = [p for p in all_players if p.get("bowling", 0) >= 60]
-    keepers = [p for p in all_players if p.get("wicketKeeping", 0) >= 60]
-    batsmen = [p for p in all_players if p.get("batting", 0) >= 70]
-    allrounders = [
-        p for p in all_players
-        if p.get("batting", 0) >= 50 and p.get("bowling", 0) >= 50
-    ]
+    # --- New Classification Logic ---
+    keeper, allrounder, bowl, batter = [], [], [], []
 
-    # sorting
-    bowlers.sort(key=lambda x: x["bowling"], reverse=True)
-    keepers.sort(key=lambda x: x["wicketKeeping"], reverse=True)
-    batsmen.sort(key=lambda x: x["batting"], reverse=True)
-    allrounders.sort(key=lambda x: (x["batting"] + x["bowling"]) / 2, reverse=True)
+    for i in all_players:
+        m = 0
+        x = ""
+
+        if i.get("wicketKeeping", 0) > 50:
+            if i.get("wicketKeeping", 0) + i.get("batting", 0) > m:
+                m = i.get("wicketKeeping", 0) + i.get("batting", 0)
+                x = "keeper"
+
+        if i.get("batting", 0) > 50 and i.get("bowling", 0) > 50:
+            if i.get("batting", 0) + i.get("bowling", 0) > m:
+                m = i.get("batting", 0) + i.get("bowling", 0)
+                x = "allrounder"
+        else:
+            if i.get("bowling", 0) > i.get("batting", 0):
+                if i.get("bowling", 0) > m:
+                    m = i.get("bowling", 0)
+                    x = "bowl"
+            else:
+                if i.get("batting", 0) > m:
+                    m = i.get("batting", 0)
+                    x = "batter"
+
+        # Append the player to the correct role list
+        if x == "keeper":
+            keeper.append(i)
+        elif x == "allrounder":
+            allrounder.append(i)
+        elif x == "bowl":
+            bowl.append(i)
+        elif x == "batter":
+            batter.append(i)
+
+    # --- Sorting ---
+    bowl.sort(key=lambda x: x["bowling"], reverse=True)
+    keeper.sort(key=lambda x: x["wicketKeeping"], reverse=True)
+    batter.sort(key=lambda x: x["batting"], reverse=True)
+    allrounder.sort(key=lambda x: (x["batting"] + x["bowling"]) / 2, reverse=True)
 
     chosen: List[Dict[str, Any]] = []
 
-    # constraints
-    if len(bowlers) < 4:
+    # --- Constraints ---
+    if len(bowl) < 4:
         raise ValueError("Not enough bowlers available (need at least 4)")
-    chosen.extend(bowlers[:4])
+    chosen.extend(bowl[:4])
 
-    if not keepers:
+    if not keeper:
         raise ValueError("No wicketkeeper available")
-    chosen.append(keepers[0])
+    chosen.append(keeper[0])
 
     # fill remaining slots
     remaining_slots = TEAM_SIZE - len(chosen)
@@ -69,14 +95,14 @@ async def generate_team(req: TeamCreateRequest) -> TeamOut:
     remaining.sort(key=overall_score, reverse=True)
     chosen.extend(remaining[:remaining_slots])
 
-    # stats
+    # --- Stats ---
     stats = TeamStats(
         avgBatting=round(sum(p["batting"] for p in chosen) / TEAM_SIZE, 2),
         avgBowling=round(sum(p["bowling"] for p in chosen) / TEAM_SIZE, 2),
         avgFielding=round(sum(p["fielding"] for p in chosen) / TEAM_SIZE, 2),
     )
 
-    # assign name
+    # --- Assign name ---
     team_count = await TEAMS.count_documents({})
     name = req.name or f"Team {team_count + 1}"
 
@@ -102,7 +128,7 @@ async def generate_team(req: TeamCreateRequest) -> TeamOut:
         id=str(saved["_id"]),
         name=saved["name"],
         size=saved["size"],
-        players=player_names, 
+        players=player_names,
         stats=TeamStats(**saved["stats"]),
     )
 
