@@ -7,7 +7,7 @@ router = APIRouter(prefix="/teams", tags=["Teams"])
 
 @router.post("/generate", response_model=TeamOut, status_code=status.HTTP_201_CREATED)
 async def generate_team(req: TeamCreateRequest):
-    # validate composition sum == team_size (explicit requirement coverage)
+
     if req.normalized() != req.team_size:
         raise HTTPException(
             status_code=400,
